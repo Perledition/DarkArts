@@ -3,7 +3,7 @@ import socket
 from _thread import *
 import sys
 
-server = ""
+server = "192.168.178.24"
 port = 5555
 
 # creates the socket
@@ -24,6 +24,8 @@ print("Waiting for a connection , Server Started")
 
 def threaded_client(connection):
 
+    # send information to show that we are connected
+    conn.send(str.encode("Connected"))
     reply = ""
     while True:
         try:
@@ -33,12 +35,11 @@ def threaded_client(connection):
             reply = data.decode("utf-8")
 
             if not data:
-
                 # break the loop in case missing data
                 print("Disconnected")
                 break
-            else:
 
+            else:
                 # print status updates
                 print("Received:", reply)
                 print("Sending:", reply)
@@ -49,6 +50,9 @@ def threaded_client(connection):
         except Exception as err:
             print(err)
             break
+
+    print("Lost connection")
+    conn.close()
 
 
 while True:

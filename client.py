@@ -1,5 +1,6 @@
 import pygame
-from .objects.game_objects import Player
+from objects.game_objects import Player
+from network import  Network
 
 
 # set global window settings
@@ -19,8 +20,11 @@ def draw_window(win, player):
 
 
 # Defines the main loop which runs until the program gets stopped
-def main():
+def run_game():
     run = True
+    n = Network()
+    startPos = n.getPos()
+
     player = Player(50, 50, 100, 100, (0, 255, 0))
     clock = pygame.time.Clock()
 
@@ -38,4 +42,6 @@ def main():
         player.move()
         draw_window(win, player)
 
-main()
+
+run_game()
+

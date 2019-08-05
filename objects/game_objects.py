@@ -19,22 +19,22 @@ class Player:
     def move(self):
 
         # returns a list of keys and if they are pressed the value will be a one
-        keys = pygame.keys.get_pressed()
+        keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_a]:
             self.x -= self.vel
 
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_d]:
             self.x += self.vel
 
-        if keys[pygame.K_UP]:
-            self.y += self.vel
-
-        if keys[pygame.K_DOWN]:
+        if keys[pygame.K_w]:
             self.y -= self.vel
 
+        if keys[pygame.K_s]:
+            self.y += self.vel
+
         # update the player position
-        self.rect(self.x, self.y, self.width, self.heigth)
+        self.rect = (self.x, self.y, self.width, self.heigth)
 
 
 
