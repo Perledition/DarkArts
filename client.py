@@ -1,6 +1,5 @@
 import pygame
-from objects.game_objects import Player
-from network import  Network
+from network import Network
 
 
 # set global window settings
@@ -9,13 +8,12 @@ height = 500
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
 
-clientNumber = 0
-
 
 # draw the Window which we want to display
-def draw_window(win, player):
+def draw_window(window, player, player2):
     win.fill((255, 255, 255))
-    player.draw(win)
+    player.draw(window)
+    player2.draw(window)
     pygame.display.update()
 
 
@@ -23,13 +21,12 @@ def draw_window(win, player):
 def run_game():
     run = True
     n = Network()
-    startPos = n.getPos()
-
-    player = Player(50, 50, 100, 100, (0, 255, 0))
+    player1 = n.getP()
     clock = pygame.time.Clock()
 
     while run:
         clock.tick(60)
+        player2 = n.send(player1)
 
         # update the game window for each event // pygame specific
         for event in pygame.event.get():
@@ -39,8 +36,8 @@ def run_game():
                 run = False
                 pygame.quit()
 
-        player.move()
-        draw_window(win, player)
+        player1.move()
+        draw_window(win, player1, player2)
 
 
 run_game()

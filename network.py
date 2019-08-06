@@ -1,4 +1,5 @@
 import socket
+import pickle
 
 
 # class which is responsible to connect to the server
@@ -9,16 +10,16 @@ class Network:
         self.server = "192.168.178.24"
         self.port = 5555
         self.addr = (self.server, self.port)
-        self.pos = self.connect()
+        self.p = self.connect()
 
-    def getPos(self):
-        return self.pos
+    def getP(self):
+        return self.p
 
     def connect(self):
         try:
             # connect and provide a msg
             self.client.connect(self.addr)
-            return self.client.recv(2048).decode()
+            return pickle.loads(self.client.recv(2048))
 
         except Exception as err:
             print(err)
@@ -31,8 +32,8 @@ class Network:
         :return: decoded information
         """
         try:
-            self.client.send(str.encode(data))
-            return self.client.recv(2048).decode()
+            self.client.send(pickle.dumps(data))
+            return pickle.loads(self.client.recv(2048))
 
         except socket.error as err:
             print(err)
