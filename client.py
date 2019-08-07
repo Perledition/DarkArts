@@ -1,12 +1,13 @@
 import pygame
 from network import Network
-
+from settings.global_constants import window_heigth, window_width
 
 # set global window settings
-width = 500
-height = 500
+width = window_width
+height = window_heigth
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
+print(pygame.display.list_modes())
 
 
 # draw the Window which we want to display
@@ -14,6 +15,11 @@ def draw_window(window, player, player2):
     win.fill((255, 255, 255))
     player.draw(window)
     player2.draw(window)
+
+    # draw all the spells player one has casted
+    for s in player.spells:
+        s.draw(window)
+
     pygame.display.update()
 
 

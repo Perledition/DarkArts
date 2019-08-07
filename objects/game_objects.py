@@ -1,5 +1,7 @@
 # find all the Game objects in here
 import pygame
+from .spells import *
+from settings.global_constants import window_heigth, window_width
 
 
 class Player:
@@ -12,6 +14,8 @@ class Player:
         self.color = color  # defines the color of the player rectangle
         self.rect = (x, y, width, height)  # defines the rectangle as player object defined height*width
         self.vel = 3    # defines the speed of the object when pressing key
+        self.standing = True
+        self.spells = []
 
     def draw(self, win):
         pygame.draw.rect(win, self.color, self.rect)
@@ -25,17 +29,20 @@ class Player:
         # returns a list of keys and if they are pressed the value will be a one
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_a]:
+        if keys[pygame.K_LEFT] and self.x > self.vel:
             self.x -= self.vel
 
-        if keys[pygame.K_d]:
+        if keys[pygame.K_RIGHT] and self.x < window_width - self.width - self.vel:
             self.x += self.vel
 
-        if keys[pygame.K_w]:
+        if keys[pygame.K_UP] and self.y > self.vel:
             self.y -= self.vel
 
-        if keys[pygame.K_s]:
+        if keys[pygame.K_DOWN] and self.y < window_heigth - self.vel:
             self.y += self.vel
+
+        if keys[pygame.K_a]:
+            self.spells.append((Stupor(round(self.x + self.width//2), round(self.y + self.height//2), 6, (104, 44, 0), self.vel)))
 
         self.update()
 
