@@ -1,4 +1,5 @@
 import pygame
+import os
 from network import Network
 from settings.global_constants import window_heigth, window_width
 
@@ -7,18 +8,49 @@ width = window_width
 height = window_heigth
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
-print(pygame.display.list_modes())
+# print(pygame.display.list_modes())
+
+# defines lists of images for the walking animation
+SKIN_PATH = 'objects/statics/player/skin'  # get parent folder
+walk_right = [pygame.image.load(os.path.join(SKIN_PATH, img)) for img in
+                   ['R{}.png'.format(x) for x in range(1, 5)]]
+walk_left = [pygame.image.load(os.path.join(SKIN_PATH, img)) for img in
+                  ['L{}.png'.format(x) for x in range(1, 5)]]
+char = pygame.image.load(os.path.join(SKIN_PATH, 'standing.png'))
+
+
+def draw_player(plr, window):
+    # if we move in the left direction display the image by index of walk_count // same for right
+    if plr.position_map[0]:
+        window.blit(walk_left[plr.walk_count], (plr.x, plr.y))
+
+    elif plr.position_map[1]:
+        window.blit(walk_right[plr.walk_count], (plr.x, plr.y))
+
+    elif plr.position_map[2] or plr.position_map[3]:
+        window.blit(char, (plr.x, plr.y))
+
+    else:
+        window.blit(char, (plr.x, plr.y))
+
+    pygame.draw.rect(window, (255, 0, 0), plr.hitbox, 2)
 
 
 # draw the Window which we want to display
 def draw_window(window, player, player2):
     win.fill((255, 255, 255))
-    player.draw(window)
-    player2.draw(window)
+
+    draw_player(player, window)
+    draw_player(player2, window)
 
     # draw all the spells player one has casted
-    for s in player.spells:
-        s.draw(window)
+    for sp1 in player.spells:
+        sp1.update()
+        sp1.draw(window)
+
+    for sp2 in player2.spells:
+        sp2.update()
+        sp2.draw(window)
 
     pygame.display.update()
 

@@ -1,11 +1,13 @@
 # this python file handles the connection to the servers
 import socket
+import os
 from objects.game_objects import Player
 from _thread import *
 import pickle
 
 server = "192.168.178.24"
 port = 5555
+print(os.getcwd())
 
 # creates the socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,7 +24,7 @@ except socket.error as err:
 s.listen(2)
 
 # pre create two player objects one in red and the other one in blue
-players = [Player(0, 0, 50, 50, (255, 0, 0)), Player(100, 100, 50, 50, (0, 0, 255))]
+players = [Player(0, 0, 64, 64, (255, 0, 0), (100, 50)), Player(100, 100, 64, 64, (0, 0, 255), (100, 50))]
 
 
 def threaded_client(connection, player):
