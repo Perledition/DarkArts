@@ -6,7 +6,8 @@ from settings.global_constants import window_heigth, window_width
 
 class Player:
 
-    def __init__(self, x, y, width, height, color, attributes):
+    def __init__(self, x, y, width, height, color, attributes, player_id):
+        self.id = player_id
         self.x = x  # defines position on x-axis
         self.y = y  # defines position on y-axis
         self.width = width  # defines the width of the character
@@ -29,6 +30,9 @@ class Player:
 
     def update_spell(self):
         for spell in self.spells:
+            if spell.damage_dealt:
+                self.spells.pop(self.spells.index(spell))
+
             if (spell.x > window_width) or (spell.x < 0) or (spell.y > window_heigth) or (spell.y < 0):
                 self.spells.pop(self.spells.index(spell))
 
@@ -47,8 +51,10 @@ class Player:
         self.spells.append(spell_to_cast)
         self.magic_available -= spell_to_cast.magic_cost
 
-    def hit(self):
-        pass
+    def hit(self, damage):
+        self.health -= damage
+        print('{} damage'.format(damage))
+        print('{} health'.format(self.health))
 
     def move(self):
 
@@ -80,7 +86,7 @@ class Player:
             self.walk_count = 0
 
         if keys[pygame.K_a]:
-            cast = Stupor(round(self.x + self.width // 2), round(self.y + self.height // 2), 6, (0, 255, 0), 1, 0)
+            cast = Stupor(round(self.x + self.width // 2), round(self.y + self.height // 2), 6, (0, 255, 0), 1, self.id)
             if self.magic_available >= cast.magic_cost:
                 self.cast_spell(cast)
 

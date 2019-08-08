@@ -4,6 +4,7 @@ from network import Network
 from settings.global_constants import window_heigth, window_width
 
 # set global window settings
+pygame.init()
 width = window_width
 height = window_heigth
 win = pygame.display.set_mode((width, height))
@@ -36,6 +37,28 @@ def draw_player(plr, window):
     pygame.draw.rect(window, (255, 0, 0), plr.hitbox, 2)
 
 
+def define_rect(rect_tuple):
+    # (y, y, width, height)
+    x = rect_tuple[0]
+    y = rect_tuple[1]
+    x2 = rect_tuple[0] + rect_tuple[2]
+    y2 = rect_tuple[1] + rect_tuple[3]
+    return x, y, x2, y2
+
+
+def spell_hit(player, spell):
+    x1, y1, x2, y2 = define_rect(player.hitbox)
+
+    if (spell.x > x1) and (spell.x < x2) and (spell.y > y1) and (spell.y < y2):
+        if spell.owner != player.id:
+            player.hit(spell.damage)
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
 # draw the Window which we want to display
 def draw_window(window, player, player2):
     win.fill((255, 255, 255))
@@ -44,13 +67,9 @@ def draw_window(window, player, player2):
     draw_player(player2, window)
 
     # draw all the spells player one has casted
-    for sp1 in player.spells:
-        sp1.update()
-        sp1.draw(window)
-
-    for sp2 in player2.spells:
-        sp2.update()
-        sp2.draw(window)
+    for sp in player.spells + player2.spells:
+        sp.update(spell_hit(player, sp))
+        sp.draw(window)
 
     pygame.display.update()
 
@@ -68,6 +87,9 @@ def run_game():
 
         # update the game window for each event // pygame specific
         for event in pygame.event.get():
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                print(event.pos)
 
             # if the event is equal to stop, then set run to false an quit the game
             if event.type == pygame.QUIT:

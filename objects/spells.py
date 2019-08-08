@@ -12,11 +12,13 @@ class SpellBase(object):
         self.facing = facing
         self.vel = 8 * facing
         self.owner = owner
+        self.damage_dealt = False
 
     def draw(self, window):
         pygame.draw.circle(window, self.color, (self.x, self.y), self.radius)
 
-    def update(self):
+    def update(self, damage_indicator):
+        self.damage_dealt = damage_indicator
         # update the spell position
         self.x += self.vel
         self.y += self.vel
@@ -28,7 +30,7 @@ class Stupor(SpellBase):
         super().__init__(x, y, radius, color, facing, owner)
         self.damage = 3
         self.magic_cost = 20
-        self.cool_down = 2
+        self.cool_down = 5
 
 
 

@@ -24,7 +24,7 @@ except socket.error as err:
 s.listen(2)
 
 # pre create two player objects one in red and the other one in blue
-players = [Player(0, 0, 64, 64, (255, 0, 0), (100, 50)), Player(100, 100, 64, 64, (0, 0, 255), (100, 50))]
+players = [Player(0, 0, 64, 64, (255, 0, 0), (100, 50), 1), Player(100, 100, 64, 64, (0, 0, 255), (100, 50), 2)]
 
 
 def threaded_client(connection, player):
