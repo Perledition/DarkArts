@@ -46,17 +46,24 @@ def define_rect(rect_tuple):
     return x, y, x2, y2
 
 
-def spell_hit(player, spell):
+def spell_hit(player, spell, player2):
+
+    # rectangle of player it self
     x1, y1, x2, y2 = define_rect(player.hitbox)
 
+    # rectangle of enemy player
+    ex1, ey1, ex2, ey2 = define_rect(player2.hitbox)
+
+    # this function checks if the player it self was hit by an enemy spell
     if (spell.x > x1) and (spell.x < x2) and (spell.y > y1) and (spell.y < y2):
         if spell.owner != player.id:
             player.hit(spell.damage)
             return True
-        else:
-            return False
-    else:
-        return False
+
+    # this function checks if one of the own spells hits the enemy
+    if (spell.x > ex1) and (spell.x < ex2) and (spell.y > ey1) and (spell.y < ey2):
+        if spell.owner == player.id:
+            player.spells.pop(player.spells.index(spell))
 
 
 # draw the Window which we want to display
@@ -68,7 +75,7 @@ def draw_window(window, player, player2):
 
     # draw all the spells player one has casted
     for sp in player.spells + player2.spells:
-        sp.update(spell_hit(player, sp))
+        sp.update(spell_hit(player, sp, player2))
         sp.draw(window)
 
     pygame.display.update()
@@ -89,14 +96,16 @@ def run_game():
         for event in pygame.event.get():
 
             if event.type == pygame.MOUSEBUTTONUP:
-                print(event.pos)
+                pos = pygame.mouse.get_pos()
+                player1.target_x = pos[0]
+                player1.target_y = pos[1]
 
             # if the event is equal to stop, then set run to false an quit the game
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
 
-        player1.move()
+        player1.move2()
         draw_window(win, player1, player2)
 
 
