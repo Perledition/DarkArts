@@ -1,8 +1,9 @@
 import pygame
 import os
-import math
+from copy import deepcopy
 from network import Network
 from settings.global_constants import window_heigth, window_width
+from global_utilites.utilits import define_rect
 
 # set global window settings
 pygame.init()
@@ -38,15 +39,6 @@ def draw_player(plr, window):
     pygame.draw.rect(window, (255, 0, 0), plr.hitbox, 2)
 
 
-def define_rect(rect_tuple):
-    # (y, y, width, height)
-    x = rect_tuple[0]
-    y = rect_tuple[1]
-    x2 = rect_tuple[0] + rect_tuple[2]
-    y2 = rect_tuple[1] + rect_tuple[3]
-    return x, y, x2, y2
-
-
 def spell_hit(player, spell, player2):
 
     # rectangle of player it self
@@ -67,6 +59,18 @@ def spell_hit(player, spell, player2):
             player.spells.pop(player.spells.index(spell))
 
 
+def movement_definitions(target, x, y, speed):
+    distance = (target[0] - x, target[1] - y)
+    if abs(distance[0]) >= abs(distance[1]):
+        x_vel = speed
+        y_vel = abs(distance[1]) / (abs(distance[0]) / x_vel)
+    else:
+        y_vel = speed
+        x_vel = abs(distance[0]) / (abs(distance[1]) / y_vel)
+
+    return x_vel, y_vel
+
+
 # draw the Window which we want to display
 def draw_window(window, player, player2):
     win.fill((255, 255, 255))
@@ -78,6 +82,10 @@ def draw_window(window, player, player2):
     for sp in player.spells + player2.spells:
         sp.update(spell_hit(player, sp, player2))
         sp.draw(window)
+
+    if player.aim_mode[0]:
+        start_pos = (round(player.x + player.width // 2), round(player.y + player.height // 2))
+        pygame.draw.line(window, (155, 23, 112), start_pos, pygame.mouse.get_pos())
 
     pygame.display.update()
 
@@ -96,23 +104,28 @@ def run_game():
         # update the game window for each event // pygame specific
         for event in pygame.event.get():
 
-            if event.type == pygame.MOUSEBUTTONUP:
+            if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1) and (not player1.aim_mode[0]):
                 player1.target = pygame.mouse.get_pos()
+                player1.x_vel, player1.y_vel = movement_definitions(player1.target, player1.x, player1.y, player1.speed)
 
-                distance = (player1.target[0] - player1.x, player1.target[1] - player1.y)
-                if abs(distance[0]) >= abs(distance[1]):
-                    player1.x_vel = player1.speed
-                    player1.y_vel = abs(distance[1]) / (abs(distance[0]) / player1.x_vel)
-                else:
-                    player1.y_vel = player1.speed
-                    player1.x_vel = abs(distance[0])/(abs(distance[1])/player1.y_vel)
+            if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1) and player1.aim_mode[0]:
+                spell = deepcopy(player1.spell_collection[player1.aim_mode[1]])
+                spell.x = round(player1.x + player1.width // 2)
+                spell.y = round(player1.y + player1.height // 2)
+                spell.target = pygame.mouse.get_pos()
+                spell.x_vel, spell.y_vel = movement_definitions(spell.target, spell.x, spell.y, spell.speed)
+                player1.cast_spell(spell)
+                player1.aim_mode = [False, 0]
+
+            if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 3):
+                    player1.aim_mode = [False, 0]
 
             # if the event is equal to stop, then set run to false an quit the game
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
 
-        player1.move2()
+        player1.move()
         draw_window(win, player1, player2)
 
 
