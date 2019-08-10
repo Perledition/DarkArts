@@ -1,5 +1,6 @@
 import pygame
 import os
+import math
 from network import Network
 from settings.global_constants import window_heigth, window_width
 
@@ -97,6 +98,14 @@ def run_game():
 
             if event.type == pygame.MOUSEBUTTONUP:
                 player1.target = pygame.mouse.get_pos()
+
+                distance = (player1.target[0] - player1.x, player1.target[1] - player1.y)
+                if abs(distance[0]) >= abs(distance[1]):
+                    player1.x_vel = player1.speed
+                    player1.y_vel = abs(distance[1]) / (abs(distance[0]) / player1.x_vel)
+                else:
+                    player1.y_vel = player1.speed
+                    player1.x_vel = abs(distance[0])/(abs(distance[1])/player1.y_vel)
 
             # if the event is equal to stop, then set run to false an quit the game
             if event.type == pygame.QUIT:

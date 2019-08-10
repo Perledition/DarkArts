@@ -16,7 +16,9 @@ class Player:
         self.height = height  # defines the height of the character
         self.color = color  # defines the color of the player rectangle
         self.rect = (x, y, width, height)  # defines the rectangle as player object defined height*width
-        self.vel = 5    # defines the speed of the object when pressing key
+        self.speed = 60
+        self.x_vel = 0    # defines the speed of the object when pressing key
+        self.y_vel = 0  # defines the speed of the object when pressing key
         self.position_map = [False, False, False, False]  # this is a map of boolean values to check the latest position (left, right, top, down)
         self.spells = []  # includes all spells created for the character
         self.walk_count = 0  # keeps track of the steps - needed for the sprites
@@ -59,31 +61,32 @@ class Player:
         print('{} damage'.format(damage))
         print('{} health'.format(self.health))
 
-    def coordinate_calculation(self, start, end, self_dimension, area_dimension):
-
-        distance = (end - start)
-        if distance > 0:
-            direction = (distance / abs(distance))
-            if (direction > 0) and (start < area_dimension - self_dimension - self.vel):
-                if abs(distance / self.vel) >= 1:
-                    return direction * self.vel
-                else:
-                    return distance
-
-            if (direction < 0) and end > self_dimension + self.vel:
-                if abs(distance/self.vel):
-                    return direction * self.vel
-                else:
-                    return distance
-            else:
-                return 0
-        else:
-            return 0
-
     def move2(self):
+        speed = 50/1000
+        # this is meant to calculate the direction of the movement
+        coordinate_pairs = list(zip([self.x, self.y], list(self.target)))
+        xd, yd = 1, 1
+        for coordinate in coordinate_pairs:
 
-        self.x += self.coordinate_calculation(self.x, self.target[0], self.width, window_width)
-        self.y += self.coordinate_calculation(self.y, self.target[1], self.height, window_heigth)
+            # get index of coordinate pairs to decide if x or y axis is relevant
+            ix = coordinate_pairs.index(coordinate)
+
+            # check if distance between points is not zero and if x or y has to be updated
+            if ((coordinate[1] - coordinate[0]) != 0) and (ix == 0):
+                xd = (self.target[0] - self.x)/abs((self.target[0] - self.x))
+
+            if ((coordinate[1] - coordinate[0]) != 0) and (ix == 1):
+                yd = (self.target[1] - self.y)/abs((self.target[1] - self.y))
+
+        if (self.target[0] - self.x) != 0 and abs(self.target[0] - self.x) > (self.x_vel*speed):
+            self.x += xd * self.x_vel * speed
+        else:
+            self.x += (self.target[0] - self.x)
+
+        if (self.target[1] - self.y) != 0 and abs(self.target[1] - self.y) > (self.y_vel*speed):
+            self.y += yd * self.y_vel * speed
+        else:
+            self.y += (self.target[1] - self.y)
 
         self.walk_count += 1
 
@@ -126,7 +129,6 @@ class Player:
 
         self.hitbox = (self.x + 20, self.y + 10, 28, 50)
         self.update()
-
 
 
 
