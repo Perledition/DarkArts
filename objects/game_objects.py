@@ -10,14 +10,13 @@ class Player:
         self.id = player_id
         self.x = x  # defines position on x-axis
         self.y = y  # defines position on y-axis
-        self.target_x = 0  # This is the goal x coordinate
-        self.target_y = 0  # This is the goal y coordinate
+        self.target = (self.x, self.y)  # This is the goal (x, y) coordinate
 
         self.width = width  # defines the width of the character
         self.height = height  # defines the height of the character
         self.color = color  # defines the color of the player rectangle
         self.rect = (x, y, width, height)  # defines the rectangle as player object defined height*width
-        self.vel = 200    # defines the speed of the object when pressing key
+        self.vel = 5    # defines the speed of the object when pressing key
         self.position_map = [False, False, False, False]  # this is a map of boolean values to check the latest position (left, right, top, down)
         self.spells = []  # includes all spells created for the character
         self.walk_count = 0  # keeps track of the steps - needed for the sprites
@@ -27,7 +26,6 @@ class Player:
         self.health = attributes[0]
         self.magic = attributes[1]
         self.magic_available = attributes[1]
-        self.speed = 5
         self.hitbox = (self.x + 20, self.y + 10, 28, 50)
 
     def draw(self, win):
@@ -61,9 +59,32 @@ class Player:
         print('{} damage'.format(damage))
         print('{} health'.format(self.health))
 
+    def coordinate_calculation(self, start, end, self_dimension, area_dimension):
+
+        distance = (end - start)
+        if distance > 0:
+            direction = (distance / abs(distance))
+            if (direction > 0) and (start < area_dimension - self_dimension - self.vel):
+                if abs(distance / self.vel) >= 1:
+                    return direction * self.vel
+                else:
+                    return distance
+
+            if (direction < 0) and end > self_dimension + self.vel:
+                if abs(distance/self.vel):
+                    return direction * self.vel
+                else:
+                    return distance
+            else:
+                return 0
+        else:
+            return 0
+
     def move2(self):
-        self.x += (self.target_x - self.x)/(self.vel * self.speed)
-        self.y += (self.target_y - self.y)/(self.vel * self.speed)
+
+        self.x += self.coordinate_calculation(self.x, self.target[0], self.width, window_width)
+        self.y += self.coordinate_calculation(self.y, self.target[1], self.height, window_heigth)
+
         self.walk_count += 1
 
         self.hitbox = (self.x + 20, self.y + 10, 28, 50)

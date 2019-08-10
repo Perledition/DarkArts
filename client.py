@@ -96,9 +96,7 @@ def run_game():
         for event in pygame.event.get():
 
             if event.type == pygame.MOUSEBUTTONUP:
-                pos = pygame.mouse.get_pos()
-                player1.target_x = pos[0]
-                player1.target_y = pos[1]
+                player1.target = pygame.mouse.get_pos()
 
             # if the event is equal to stop, then set run to false an quit the game
             if event.type == pygame.QUIT:
