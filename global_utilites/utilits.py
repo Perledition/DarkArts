@@ -66,7 +66,7 @@ def find_angle(start, pos):
     try:
         angle = math.atan((sY - pos[1]) / (sX - pos[0]))
 
-    except:
+    except ZeroDivisionError:
         angle = math.pi / 2
 
     if pos[1] < sY and pos[0] > sX:

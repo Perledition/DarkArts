@@ -32,6 +32,7 @@ class Player:
         self.hitbox = (self.x + 20, self.y + 10, 28, 50)
         self.aim_mode = [False, 0]
         self.spell_collection = {1: Stupor(round(self.x + self.width // 2), round(self.y + self.height // 2), 6, (0, 255, 0), 1, self.id)}
+        self.rotation = False
 
     def draw(self, win):
         pygame.draw.rect(win, self.color, self.rect)
@@ -152,10 +153,12 @@ class Player:
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
-            # cast a Stupor spell - THIS IS MEANT TO BE EXCHANGEABLE IN THE FUTURE
-            cast = Stupor(round(self.x + self.width // 2), round(self.y + self.height // 2), 6, (0, 255, 0), 1, self.id)
-            if self.magic_available >= cast.magic_cost:
-                self.cast_spell(cast)
+            if not self.rotation:
+                print('ROTATION START:')
+                self.rotation = True
+            else:
+                print('ROTATION STOPS:')
+                self.rotation = False
 
         if keys[pygame.K_s]:
             if self.magic_available >= self.spell_collection[1].magic_cost:

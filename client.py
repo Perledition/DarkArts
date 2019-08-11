@@ -16,23 +16,34 @@ pygame.display.set_caption("Client")
 
 # defines lists of images for the walking animation
 SKIN_PATH = 'objects/statics/player/skin'  # get parent folder
+STAND_PATH = 'objects/statics/player/standings/standings'
 walk_right = [pygame.image.load(os.path.join(SKIN_PATH, img)) for img in
                    ['R{}.png'.format(x) for x in range(1, 5)]]
 walk_left = [pygame.image.load(os.path.join(SKIN_PATH, img)) for img in
                   ['L{}.png'.format(x) for x in range(1, 5)]]
 char = pygame.image.load(os.path.join(SKIN_PATH, 'standing.png'))
+char2 = [pygame.image.load(os.path.join(STAND_PATH, img)) for img in ['{}.png'.format(i) for i in range(1, 9)]]
 
 
 def draw_player(plr, window):
     # if we move in the left direction display the image by index of walk_count // same for right
-    if plr.position_map[0]:
-        window.blit(walk_left[plr.walk_count], (plr.x, plr.y))
+    start_pos = (round(plr.x + plr.width // 2), round(plr.y + plr.height // 2))
+    angle = find_angle(start_pos, plr.target)
 
-    elif plr.position_map[1]:
-        window.blit(walk_right[plr.walk_count], (plr.x, plr.y))
+    if -1.0 <= math.cos(angle) <= -0.9:
+        window.blit(char2[6], (plr.x, plr.y))
 
-    elif plr.position_map[2] or plr.position_map[3]:
-        window.blit(char, (plr.x, plr.y))
+    elif -0.91 <= math.cos(angle) <= -0.61:
+        window.blit(char2[7], (plr.x, plr.y))
+
+    elif -0.6 <= math.cos(angle) <= 0.6:
+        window.blit(char2[0], (plr.x, plr.y))
+
+    elif 0.61 <= math.cos(angle) <= 0.9:
+        window.blit(char2[1], (plr.x, plr.y))
+
+    elif 0.91 <= math.cos(angle) <= 1.0:
+        window.blit(char2[2], (plr.x, plr.y))
 
     else:
         window.blit(char, (plr.x, plr.y))
@@ -126,6 +137,10 @@ def run_game():
 
             if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 3):
                     player1.aim_mode = [False, 0]
+
+            if player1.rotation:
+                start_pos = (round(player1.x + player1.width // 2), round(player1.y + player1.height // 2))
+                print('Angle: {}'.format(math.cos(find_angle(start_pos, pygame.mouse.get_pos()))))
 
             # if the event is equal to stop, then set run to false an quit the game
             if event.type == pygame.QUIT:
