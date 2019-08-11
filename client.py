@@ -1,9 +1,10 @@
 import pygame
 import os
+import math
 from copy import deepcopy
 from network import Network
 from settings.global_constants import window_heigth, window_width
-from global_utilites.utilits import define_rect
+from global_utilites.utilits import define_rect, find_angle
 
 # set global window settings
 pygame.init()
@@ -84,8 +85,13 @@ def draw_window(window, player, player2):
         sp.draw(window)
 
     if player.aim_mode[0]:
+
         start_pos = (round(player.x + player.width // 2), round(player.y + player.height // 2))
-        pygame.draw.line(window, (155, 23, 112), start_pos, pygame.mouse.get_pos())
+
+        angle = find_angle(start_pos, pygame.mouse.get_pos())
+        line = (round(start_pos[0] + (math.cos(angle) * 150)), round(start_pos[1] - (math.sin(angle) * 150)))
+
+        pygame.draw.line(window, (155, 23, 112), start_pos, line, 10)
 
     pygame.display.update()
 
@@ -114,6 +120,7 @@ def run_game():
                 spell.y = round(player1.y + player1.height // 2)
                 spell.target = pygame.mouse.get_pos()
                 spell.x_vel, spell.y_vel = movement_definitions(spell.target, spell.x, spell.y, spell.speed)
+                spell.dx, spell.dy = spell.get_direct_indicators()
                 player1.cast_spell(spell)
                 player1.aim_mode = [False, 0]
 

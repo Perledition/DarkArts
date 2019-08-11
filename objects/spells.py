@@ -1,5 +1,7 @@
 # this file includes all kind of spells
 import pygame
+from global_utilites.utilits import define_rect, in_rect
+from settings.global_constants import window_heigth, window_width
 
 
 class SpellBase(object):
@@ -16,6 +18,7 @@ class SpellBase(object):
         self.speed = 5 * facing
         self.owner = owner
         self.damage_dealt = False
+        self.dx, self.dy = 0, 0
 
     def draw(self, window):
         pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)
@@ -55,11 +58,11 @@ class SpellBase(object):
 
     def update(self, damage_indicator):
         self.damage_dealt = damage_indicator
+
         # update the spell position
-        dx, dy = self.get_direct_indicators()
-        if not self.damage_dealt or
-        self.x += dx * self.x_vel
-        self.y += dy * self.y_vel
+        if not self.damage_dealt or in_rect((self.x, self.y), (0, 0, window_width, window_heigth)):
+            self.x += self.dx * self.x_vel
+            self.y += self.dy * self.y_vel
 
 
 class Stupor(SpellBase):

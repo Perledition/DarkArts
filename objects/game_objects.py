@@ -158,7 +158,8 @@ class Player:
                 self.cast_spell(cast)
 
         if keys[pygame.K_s]:
-            self.aim_mode = [True, 1]
+            if self.magic_available >= self.spell_collection[1].magic_cost:
+                self.aim_mode = [True, 1]
 
     def move(self):
         """
