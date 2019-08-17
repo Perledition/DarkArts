@@ -21,7 +21,7 @@ class Player:
         self.x_vel = 0    # defines the speed of the object when pressing key
         self.y_vel = 0  # defines the speed of the object when pressing key
 
-        self.position_map = [False, False, False, False]  # this is a map of boolean values to check the latest position (left, right, top, down)
+        self.direction = 0  # defines in which the direction the player is going
         self.spells = []  # includes all spells created for the character
         self.walk_count = 0  # keeps track of the steps - needed for the sprites
 
@@ -32,7 +32,6 @@ class Player:
         self.hitbox = (self.x + 20, self.y + 10, 28, 50)
         self.aim_mode = [False, 0]
         self.spell_collection = {1: Stupor(round(self.x + self.width // 2), round(self.y + self.height // 2), 6, (0, 255, 0), 1, self.id)}
-        self.rotation = False
 
     def draw(self, win):
         pygame.draw.rect(win, self.color, self.rect)
@@ -69,8 +68,8 @@ class Player:
         self.rect = (self.x, self.y, self.width, self.height)
 
         # set the walk count back in case it reached the index limit
-        if self.walk_count + 1 >= 4:
-            self.walk_count = 0
+        #if self.walk_count + 1 >= 4:
+        #    self.walk_count = 0
 
         # check if spells need to be removed from the spells list
         self.update_spell()
@@ -152,14 +151,6 @@ class Player:
         # keys is a list of keys and if they are pressed the value will be a one
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_a]:
-            if not self.rotation:
-                print('ROTATION START:')
-                self.rotation = True
-            else:
-                print('ROTATION STOPS:')
-                self.rotation = False
-
         if keys[pygame.K_s]:
             if self.magic_available >= self.spell_collection[1].magic_cost:
                 self.aim_mode = [True, 1]
@@ -188,20 +179,20 @@ class Player:
             self.x += xd * self.x_vel
 
             # update the walk count this you moved in this function
-            self.walk_count += 1
+            # self.walk_count += 1
 
         # in case the distance is smaller then one move, just return the rest of the distance
         else:
             self.x += (self.target[0] - self.x)
-            self.walk_count += 1
+            # self.walk_count += 1
 
         # same as above but just for the y coordinate
         if (self.target[1] - self.y) != 0 and abs(self.target[1] - self.y) > self.y_vel:
             self.y += yd * self.y_vel
-            self.walk_count += 1
+            # self.walk_count += 1
         else:
             self.y += (self.target[1] - self.y)
-            self.walk_count += 1
+            # self.walk_count += 1
 
         # update the hitbox. It is important to move the hitbox with the player. So the player can be damaged.
         self.hitbox = (self.x + 20, self.y + 10, 28, 50)

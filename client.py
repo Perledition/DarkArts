@@ -4,49 +4,43 @@ import math
 from copy import deepcopy
 from network import Network
 from settings.global_constants import window_heigth, window_width
-from global_utilites.utilits import define_rect, find_angle
+from global_utilites.utilits import define_rect, find_angle, define_unique_direction
+
+# TODO: Add Sprites differences for each player - handed over by Object / mayby defined by house at the beginning
+# TODO: Load Sprites in different file
 
 # set global window settings
 pygame.init()
 width = window_width
 height = window_heigth
 win = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Client")
+pygame.display.set_caption("DuellClub")
 # print(pygame.display.list_modes())
 
 # defines lists of images for the walking animation
-SKIN_PATH = 'objects/statics/player/skin'  # get parent folder
-STAND_PATH = 'objects/statics/player/standings/standings'
-walk_right = [pygame.image.load(os.path.join(SKIN_PATH, img)) for img in
-                   ['R{}.png'.format(x) for x in range(1, 5)]]
-walk_left = [pygame.image.load(os.path.join(SKIN_PATH, img)) for img in
-                  ['L{}.png'.format(x) for x in range(1, 5)]]
-char = pygame.image.load(os.path.join(SKIN_PATH, 'standing.png'))
-char2 = [pygame.image.load(os.path.join(STAND_PATH, img)) for img in ['{}.png'.format(i) for i in range(1, 9)]]
+# SKIN_PATH = 'objects/statics/player/skin'  # get parent folder
+SKIN_PATH = 'objects/statics/player/standings/standings'
+
+# lists of sprites for each direction
+up = [pygame.image.load(os.path.join(SKIN_PATH, '1.png'))]
+up_right = [pygame.image.load(os.path.join(SKIN_PATH, '2.png'))]
+right = [pygame.image.load(os.path.join(SKIN_PATH, '3.png'))]
+down_right = [pygame.image.load(os.path.join(SKIN_PATH, '4.png'))]
+down = [pygame.image.load(os.path.join(SKIN_PATH, '5.png'))]
+down_left = [pygame.image.load(os.path.join(SKIN_PATH, '6.png'))]
+left = [pygame.image.load(os.path.join(SKIN_PATH, '7.png'))]
+up_left = [pygame.image.load(os.path.join(SKIN_PATH, '8.png'))]
+
+char = [up, up_right, right, down_right, down, down_left, left, up_left]
+arena = pygame.image.load(os.path.join('objects/statics/player/standings/', 'asphalt-883039_1280.jpg'))
 
 
 def draw_player(plr, window):
     # if we move in the left direction display the image by index of walk_count // same for right
     start_pos = (round(plr.x + plr.width // 2), round(plr.y + plr.height // 2))
-    angle = find_angle(start_pos, plr.target)
-
-    if -1.0 <= math.cos(angle) <= -0.9:
-        window.blit(char2[6], (plr.x, plr.y))
-
-    elif -0.91 <= math.cos(angle) <= -0.61:
-        window.blit(char2[7], (plr.x, plr.y))
-
-    elif -0.6 <= math.cos(angle) <= 0.6:
-        window.blit(char2[0], (plr.x, plr.y))
-
-    elif 0.61 <= math.cos(angle) <= 0.9:
-        window.blit(char2[1], (plr.x, plr.y))
-
-    elif 0.91 <= math.cos(angle) <= 1.0:
-        window.blit(char2[2], (plr.x, plr.y))
-
-    else:
-        window.blit(char, (plr.x, plr.y))
+    angle = math.degrees(math.atan2(plr.target[1] - plr.y, plr.target[0] - plr.x)) * (-1)
+    plr.direction = define_unique_direction(angle)
+    window.blit(char[plr.direction][plr.walk_count], (plr.x, plr.y))
 
     pygame.draw.rect(window, (255, 0, 0), plr.hitbox, 2)
 
@@ -85,7 +79,7 @@ def movement_definitions(target, x, y, speed):
 
 # draw the Window which we want to display
 def draw_window(window, player, player2):
-    win.fill((255, 255, 255))
+    win.blit(arena, (0, 0))
 
     draw_player(player, window)
     draw_player(player2, window)
@@ -137,10 +131,6 @@ def run_game():
 
             if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 3):
                     player1.aim_mode = [False, 0]
-
-            if player1.rotation:
-                start_pos = (round(player1.x + player1.width // 2), round(player1.y + player1.height // 2))
-                print('Angle: {}'.format(math.cos(find_angle(start_pos, pygame.mouse.get_pos()))))
 
             # if the event is equal to stop, then set run to false an quit the game
             if event.type == pygame.QUIT:
