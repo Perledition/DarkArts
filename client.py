@@ -14,11 +14,10 @@ pygame.init()
 width = window_width
 height = window_heigth
 win = pygame.display.set_mode((width, height))
-pygame.display.set_caption("DuellClub")
+pygame.display.set_caption("DarkArena")
 # print(pygame.display.list_modes())
 
 # defines lists of images for the walking animation
-# SKIN_PATH = 'objects/statics/player/skin'  # get parent folder
 SKIN_PATH = 'objects/statics/player/standings/standings'
 
 # lists of sprites for each direction
@@ -37,11 +36,21 @@ arena = pygame.image.load(os.path.join('objects/statics/player/standings/', 'asp
 
 def draw_player(plr, window):
     # if we move in the left direction display the image by index of walk_count // same for right
-    start_pos = (round(plr.x + plr.width // 2), round(plr.y + plr.height // 2))
     angle = math.degrees(math.atan2(plr.target[1] - plr.y, plr.target[0] - plr.x)) * (-1)
     plr.direction = define_unique_direction(angle)
     window.blit(char[plr.direction][plr.walk_count], (plr.x, plr.y))
 
+    # draw health bar and bar of magic
+    pygame.draw.rect(window, (21, 99, 194), (plr.hitbox[0], plr.hitbox[1] - 100, 50, 5))
+
+    # defines the percentage of what has to be taken down from the players health
+    subs_life = (50/plr.start_health) * (plr.start_health - plr.health)
+    pygame.draw.rect(window, (19, 161, 3), (plr.hitbox[0], plr.hitbox[1] - 100, 50 - subs_life, 5))
+
+    # do the same but just for the magic
+    subs_magic = (50 / plr.magic) * (plr.magic - plr.magic_available)
+    pygame.draw.rect(window, (29, 28, 31), (plr.hitbox[0], plr.hitbox[1] - 90, 50, 5))
+    pygame.draw.rect(window, (21, 99, 194), (plr.hitbox[0], plr.hitbox[1] - 90, 50 - subs_magic, 5))
     pygame.draw.rect(window, (255, 0, 0), plr.hitbox, 2)
 
 

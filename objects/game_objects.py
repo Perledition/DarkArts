@@ -26,10 +26,12 @@ class Player:
         self.walk_count = 0  # keeps track of the steps - needed for the sprites
 
         # this defines the player conditions
+        self.start_health = attributes[0]
         self.health = attributes[0]
+
         self.magic = attributes[1]
         self.magic_available = attributes[1]
-        self.hitbox = (self.x + 20, self.y + 10, 28, 50)
+        self.hitbox = (self.x + 20, self.y + 10, 60, 100)
         self.aim_mode = [False, 0]
         self.spell_collection = {1: Stupor(round(self.x + self.width // 2), round(self.y + self.height // 2), 6, (0, 255, 0), 1, self.id)}
 
@@ -96,7 +98,8 @@ class Player:
         :param damage: (int): Number of health by which the players health gets reduced
         :return: None - Function needs no return value
         """
-        self.health -= damage
+        if self.health > 0:
+            self.health -= damage
 
     def get_direct_indicators(self):
         """
