@@ -40,9 +40,11 @@ class TitleScene(SceneBase):
     def __init__(self):
         SceneBase.__init__(self)
         self.font = pygame.font.Font('freesansbold.ttf', 115)
-        self.background = pygame.image.load(os.path.join('images/', 'main_menu.png'))
-        self.join_button = Button((46, 116, 130), (42, 43, 46), 150, 536, 150, 50, 'Enter the Arena')
-        self.username = InputBox(150, 500, 150, 30)
+        self.background = pygame.image.load(os.path.join('images/', 'menu_bg.jpg'))
+        self.login = pygame.image.load(os.path.join('images/', 'login_box.png'))
+        self.join_button = Button((46, 116, 130), (42, 43, 46), 250, 606, 150, 30, 'Enter the Arena')
+        self.username = InputBox(130, 470, 150, 30)
+        self.password = InputBox(130, 540, 150, 30)
 
     def ProcessInput(self, events, pressed_keys):
         for event in events:
@@ -71,8 +73,10 @@ class TitleScene(SceneBase):
 
     def Render(self, screen):
         screen.blit(self.background, (0, 0))
+        screen.blit(self.login, (0, 0))
         self.join_button.draw(screen)
         self.username.draw(screen)
+        self.password.draw(screen)
 
 
 class HousesScene(SceneBase):
