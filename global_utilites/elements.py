@@ -4,7 +4,7 @@ import pygame
 
 class Button:
 
-    def __init__(self, color, h_color, x, y, width, height, text='', image=None, h_image=None, text_size=14, text_color=(255, 255, 255)):
+    def __init__(self, color, h_color, x, y, width, height, text='', image=None, h_image=None, text_size=14, text_color=(255, 255, 255), center=False):
         self.color = color
         self.hover_color = h_color
         self.hover_image = h_image
@@ -15,6 +15,7 @@ class Button:
         self.text_size = text_size
         self.x = x
         self.y = y
+        self.center = center
         self.width = width
         self.height = height
         self.text = text
@@ -22,7 +23,7 @@ class Button:
         self.display_image = image
         self.textbox = False
         self.textbox_text = ''
-        self.sound = pygame.mixer.music.load(os.path.join('sounds/', 'button.mp3'))
+        # self.sound = pygame.mixer.music.load(os.path.join('sounds/', 'button.mp3'))
 
     def draw(self, win, outline=None):
         """
@@ -43,7 +44,10 @@ class Button:
 
         if self.display_image is not None:
             x = self.x + (self.width/2 - self.image.get_width()/2)
-            y = self.y + (self.height/2 - self.image.get_height() - text.get_height())
+            if self.center:
+                y = self.y + (self.height/2 - self.image.get_height()/2 - text.get_height())
+            else:
+                y = self.y + (self.height / 2 - self.image.get_height() - text.get_height())
             win.blit(self.display_image, (x, y))
 
         if self.textbox:
@@ -55,17 +59,12 @@ class Button:
     def hover_text_up(self):
         self.textbox = True
 
-    def hover(self, mode, hover_text=''):
+    def hover(self, mode):
         if mode:
             self.display_color = self.hover_color
             self.text_display_color = self.text_hover_color
-            self.sound.play(0)
             if self.hover_image is not None:
                 self.display_image = self.hover_image
-
-            # if hover_text != '':
-                # self.textbox_text = hover_text
-                #self.textbox = True
 
         else:
             self.display_color = self.color
