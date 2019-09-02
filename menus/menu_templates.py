@@ -3,20 +3,22 @@
 # standard module imports
 import os
 import random
+from copy import deepcopy
 
 # third party imports
 import pygame
 
 # game module imports
 from settings.global_constants import window_heigth, window_width
-from global_utilites.elements import Button, InputBox
-from global_utilites.utilits import in_rect, define_rect
+from global_utilites.elements import Button, InputBox, TextBox
+from global_utilites.utilits import *
 
 
 class SceneBase:
     def __init__(self):
         self.next = self
         pygame.init()
+        pygame.display.set_caption("DarkArena")
 
     def ProcessInput(self, events, pressed_keys):
         print("uh-oh, you didn't override this in the child class")
@@ -24,7 +26,7 @@ class SceneBase:
     def Update(self):
         print("uh-oh, you didn't override this in the child class")
 
-    def Render(self, screen):
+    def Render(self, screen, **kwargs):
         print("uh-oh, you didn't override this in the child class")
 
     def SwitchToScene(self, next_scene):
@@ -40,8 +42,8 @@ class TitleScene(SceneBase):
     def __init__(self):
         SceneBase.__init__(self)
         self.font = pygame.font.Font('freesansbold.ttf', 115)
-        self.background = pygame.image.load(os.path.join('images/', 'menu_bg.jpg'))
-        self.login = pygame.image.load(os.path.join('images/', 'login_box.png'))
+        self.background = pygame.image.load(os.path.join('menus/images/', 'menu_bg.jpg'))
+        self.login = pygame.image.load(os.path.join('menus/images/', 'login_box.png'))
         self.join_button = Button((46, 116, 130), (42, 43, 46), 250, 606, 150, 30, 'Enter the Arena')
         self.username = InputBox(130, 470, 150, 30)
         self.password = InputBox(130, 540, 150, 30)
@@ -82,14 +84,14 @@ class TitleScene(SceneBase):
 class HousesScene(SceneBase):
     def __init__(self):
         SceneBase.__init__(self)
-        self.griff_img = [pygame.image.load(os.path.join('images/', x)) for x in ['griff_color.png', 'griff_gray.png']]
-        self.huff_img = [pygame.image.load(os.path.join('images/', x)) for x in ['huff_color.png', 'huff_gray.png']]
-        self.rave_img = [pygame.image.load(os.path.join('images/', x)) for x in ['rave_color.png', 'rave_gray.png']]
-        self.slys_img = [pygame.image.load(os.path.join('images/', x)) for x in ['slys_color.png', 'slys_gray.png']]
+        self.griff_img = [pygame.image.load(os.path.join('menus/images/', x)) for x in ['griff_color.png', 'griff_gray.png']]
+        self.huff_img = [pygame.image.load(os.path.join('menus/images/', x)) for x in ['huff_color.png', 'huff_gray.png']]
+        self.rave_img = [pygame.image.load(os.path.join('menus/images/', x)) for x in ['rave_color.png', 'rave_gray.png']]
+        self.slys_img = [pygame.image.load(os.path.join('menus/images/', x)) for x in ['slys_color.png', 'slys_gray.png']]
 
         house_list = ['{}_attr.png'.format(i) for i in ['griff', 'slys', 'huff', 'rave']]
-        self.attributes = [pygame.image.load(os.path.join('images/', x)) for x in house_list]
-        self.gradient = pygame.image.load(os.path.join('images/', 'gradient.png'))
+        self.attributes = [pygame.image.load(os.path.join('menus/images/', x)) for x in house_list]
+        self.gradient = pygame.image.load(os.path.join('menus/images/', 'gradient.png'))
         self.last_hover = 0
 
         w, h = pygame.display.get_surface().get_size()
@@ -137,7 +139,7 @@ class HousesScene(SceneBase):
                 if in_rect(pos, g_rect):
                     self.g_button.hover(True)
                     if self.last_hover != 1:
-                        pygame.mixer.music.load('sounds/button.mp3')
+                        pygame.mixer.music.load('menus/sounds/button.mp3')
                         pygame.mixer.music.play(0)
                         self.last_hover = 1
                 else:
@@ -146,7 +148,7 @@ class HousesScene(SceneBase):
                 if in_rect(pos, r_rect):
                     self.r_button.hover(True)
                     if self.last_hover != 2:
-                        pygame.mixer.music.load('sounds/button.mp3')
+                        pygame.mixer.music.load('menus/sounds/button.mp3')
                         pygame.mixer.music.play(0)
                         self.last_hover = 2
                 else:
@@ -155,7 +157,7 @@ class HousesScene(SceneBase):
                 if in_rect(pos, h_rect):
                     self.h_button.hover(True)
                     if self.last_hover != 3:
-                        pygame.mixer.music.load('sounds/button.mp3')
+                        pygame.mixer.music.load('menus/sounds/button.mp3')
                         pygame.mixer.music.play(0)
                         self.last_hover = 3
                 else:
@@ -164,7 +166,7 @@ class HousesScene(SceneBase):
                 if in_rect(pos, s_rect):
                     self.s_button.hover(True)
                     if self.last_hover != 4:
-                        pygame.mixer.music.load('sounds/button.mp3')
+                        pygame.mixer.music.load('menus/sounds/button.mp3')
                         pygame.mixer.music.play(0)
                         self.last_hover = 4
                 else:
@@ -186,11 +188,11 @@ class WandScene(SceneBase):
     def __init__(self):
         SceneBase.__init__(self)
         wand_picks = ['wand{}.png'.format(random.randint(1, 12)) for x in range(0, 3)]
-        self.wand1_img = [pygame.image.load(os.path.join('images/wands/', x)) for x in [wand_picks[0], wand_picks[0]]]
-        self.wand2_img = [pygame.image.load(os.path.join('images/wands/', x)) for x in [wand_picks[1], wand_picks[1]]]
-        self.wand3_img = [pygame.image.load(os.path.join('images/wands/', x)) for x in [wand_picks[2], wand_picks[2]]]
+        self.wand1_img = [pygame.image.load(os.path.join('menus/images/wands/', x)) for x in [wand_picks[0], wand_picks[0]]]
+        self.wand2_img = [pygame.image.load(os.path.join('menus/images/wands/', x)) for x in [wand_picks[1], wand_picks[1]]]
+        self.wand3_img = [pygame.image.load(os.path.join('menus/images/wands/', x)) for x in [wand_picks[2], wand_picks[2]]]
 
-        self.gradient = pygame.image.load(os.path.join('images/', 'gradient.png'))
+        self.gradient = pygame.image.load(os.path.join('menus/images/', 'gradient.png'))
         self.wand_index = random.choice([1, 2, 3])
         self.picked = False
         self.last_hover = 0
@@ -217,6 +219,7 @@ class WandScene(SceneBase):
                     if self.wand_index is 1:
                         self.picked = True
                         print('you found your wand, or did the wand found you?!')
+                        self.SwitchToScene(InGameScene())
                     else:
                         print('Ohhhh noo. This is the right one for you')
 
@@ -224,6 +227,7 @@ class WandScene(SceneBase):
                     if self.wand_index is 2:
                         self.picked = True
                         print('you found your wand, or did the wand found you?!')
+                        self.SwitchToScene(InGameScene())
                     else:
                         print('Ohhhh noo. This is the right one for you')
 
@@ -231,6 +235,7 @@ class WandScene(SceneBase):
                     if self.wand_index is 3:
                         self.picked = True
                         print('you found your wand, or did the wand found you?!')
+                        self.SwitchToScene(InGameScene())
                     else:
                         print('Ohhhh noo. This is the right one for you')
 
@@ -239,7 +244,7 @@ class WandScene(SceneBase):
                 if in_rect(pos, w1_rect):
                     self.wand1.hover(True)
                     if self.last_hover != 1:
-                        pygame.mixer.music.load('sounds/button.mp3')
+                        pygame.mixer.music.load('menus/sounds/button.mp3')
                         pygame.mixer.music.play(0)
                         self.last_hover = 1
                 else:
@@ -248,7 +253,7 @@ class WandScene(SceneBase):
                 if in_rect(pos, w2_rect):
                     self.wand2.hover(True)
                     if self.last_hover != 2:
-                        pygame.mixer.music.load('sounds/button.mp3')
+                        pygame.mixer.music.load('menus/sounds/button.mp3')
                         pygame.mixer.music.play(0)
                         self.last_hover = 2
                 else:
@@ -257,7 +262,7 @@ class WandScene(SceneBase):
                 if in_rect(pos, w3_rect):
                     self.wand3.hover(True)
                     if self.last_hover != 3:
-                        pygame.mixer.music.load('sounds/button.mp3')
+                        pygame.mixer.music.load('menus/sounds/button.mp3')
                         pygame.mixer.music.play(0)
                         self.last_hover = 3
                 else:
@@ -277,18 +282,109 @@ class WandScene(SceneBase):
 class InGameScene(SceneBase):
     def __init__(self):
         SceneBase.__init__(self)
+        self.gradient = pygame.image.load(os.path.join('menus/images/', 'gradient.png'))
+        self.start = TextBox(100, 100, 200, 15, text='Start Game', font_size=30, color=(23, 234, 223))
+        self.skills = TextBox(100, 150, 200, 15, text='Abilities', font_size=30, color=(23, 234, 223))
+        self.quit = TextBox(100, 200, 200, 15, text='Quit', font_size=30, color=(23, 234, 223))
 
     def ProcessInput(self, events, pressed_keys):
-        pass
+        pos = pygame.mouse.get_pos()
+        start_rect = define_rect(self.start.text_config())
+        skill_rect = define_rect(self.skills.text_config())
+        quit_rect = define_rect(self.quit.text_config())
+
+        for event in events:
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if in_rect(pos, start_rect):
+                    print('Start Search')
+                    pygame.quit()
+                    # self.SwitchToScene(InGameScene())
+                if in_rect(pos, skill_rect):
+                    print('have a look on your spells')
+
+                if in_rect(pos, quit_rect):
+                    quit()
+
+            if event.type == pygame.MOUSEMOTION:
+
+                if in_rect(pos, start_rect):
+                    self.start.hover(True)
+                else:
+                    self.start.hover(False)
+
+                if in_rect(pos, skill_rect):
+                    self.skills.hover(True)
+                else:
+                    self.skills.hover(False)
+
+                if in_rect(pos, quit_rect):
+                    self.quit.hover(True)
+                else:
+                    self.quit.hover(False)
 
     def Update(self):
         pass
 
     def Render(self, screen):
+
+        screen.blit(self.gradient, (0, 0))
+        self.start.draw(screen)
+        self.skills.draw(screen)
+        self.quit.draw(screen)
+
+
+class Client(SceneBase):
+
+    def __init__(self):
+        SceneBase.__init__(self)
+
+    def ProcessInput(self, events, pressed_keys):
+        run = True
+        n = Network()
+        player1 = n.getP()
+        clock = pygame.time.Clock()
+
+        while run:
+            clock.tick(60)
+            player2 = n.send(player1)
+
+            # update the game window for each event // pygame specific
+            for event in events:
+
+                if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1) and (not player1.aim_mode[0]):
+                    player1.target = pygame.mouse.get_pos()
+                    player1.x_vel, player1.y_vel = movement_definitions(player1.target, player1.x, player1.y,
+                                                                        player1.speed)
+
+                if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1) and player1.aim_mode[0]:
+                    spell = deepcopy(player1.spell_collection[player1.aim_mode[1]])
+                    spell.x = round(player1.x + player1.width // 2)
+                    spell.y = round(player1.y + player1.height // 2)
+                    spell.target = pygame.mouse.get_pos()
+                    spell.x_vel, spell.y_vel = movement_definitions(spell.target, spell.x, spell.y, spell.speed)
+                    spell.dx, spell.dy = spell.get_direct_indicators()
+                    player1.cast_spell(spell)
+                    player1.aim_mode = [False, 0]
+
+                if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 3):
+                    player1.aim_mode = [False, 0]
+
+                # if the event is equal to stop, then set run to false an quit the game
+                if event.type == pygame.QUIT:
+                    run = False
+                    pygame.quit()
+
+            player1.move()
+
+    def Update(self):
         pass
 
+    def Render(self, screen, player1, player2):
+        draw_window(screen, player1, player2)
 
-def run_game(fps, starting_scene):
+
+def game_menu(fps, starting_scene):
     pygame.init()
     screen = pygame.display.set_mode((window_width, window_heigth))
     clock = pygame.time.Clock()
@@ -327,4 +423,4 @@ def run_game(fps, starting_scene):
         clock.tick(fps)
 
 
-run_game(60, TitleScene())
+# run_game(60, TitleScene())

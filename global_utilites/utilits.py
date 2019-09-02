@@ -1,6 +1,10 @@
 # this python file includes a bunch of function which will be interesting for all objects in the game
+
+# standard module imports
 import math
-import numpy as np
+
+# third party module imports
+import pygame
 
 
 def define_rect(rect_tuple):
@@ -128,6 +132,80 @@ def define_unique_direction(angle):
         return 7
 
 
+def draw_player(plr, window, character_sprites):
+    # if we move in the left direction display the image by index of walk_count // same for right
+    angle = math.degrees(math.atan2(plr.target[1] - plr.y, plr.target[0] - plr.x)) * (-1)
+    plr.direction = define_unique_direction(angle)
+    window.blit(character_sprites[plr.direction][plr.walk_count], (plr.x, plr.y))
+
+    # draw health bar and bar of magic
+    pygame.draw.rect(window, (21, 99, 194), (plr.hitbox[0], plr.hitbox[1] - 100, 50, 5))
+
+    # defines the percentage of what has to be taken down from the players health
+    subs_life = (50/plr.start_health) * (plr.start_health - plr.health)
+    pygame.draw.rect(window, (19, 161, 3), (plr.hitbox[0], plr.hitbox[1] - 100, 50 - subs_life, 5))
+
+    # do the same but just for the magic
+    subs_magic = (50 / plr.magic) * (plr.magic - plr.magic_available)
+    pygame.draw.rect(window, (29, 28, 31), (plr.hitbox[0], plr.hitbox[1] - 90, 50, 5))
+    pygame.draw.rect(window, (21, 99, 194), (plr.hitbox[0], plr.hitbox[1] - 90, 50 - subs_magic, 5))
+    pygame.draw.rect(window, (255, 0, 0), plr.hitbox, 2)
+
+
+def spell_hit(player, spell, player2):
+
+    # rectangle of player it self
+    x1, y1, x2, y2 = define_rect(player.hitbox)
+
+    # rectangle of enemy player
+    ex1, ey1, ex2, ey2 = define_rect(player2.hitbox)
+
+    # this function checks if the player it self was hit by an enemy spell
+    if (spell.x > x1) and (spell.x < x2) and (spell.y > y1) and (spell.y < y2):
+        if spell.owner != player.id:
+            player.hit(spell.damage)
+            return True
+
+    # this function checks if one of the own spells hits the enemy
+    if (spell.x > ex1) and (spell.x < ex2) and (spell.y > ey1) and (spell.y < ey2):
+        if spell.owner == player.id:
+            player.spells.pop(player.spells.index(spell))
+
+
+def movement_definitions(target, x, y, speed):
+    distance = (target[0] - x, target[1] - y)
+    if abs(distance[0]) >= abs(distance[1]):
+        x_vel = speed
+        y_vel = abs(distance[1]) / (abs(distance[0]) / x_vel)
+    else:
+        y_vel = speed
+        x_vel = abs(distance[0]) / (abs(distance[1]) / y_vel)
+
+    return x_vel, y_vel
+
+
+# draw the Window which we want to display
+def draw_window(window, player, player2):
+    win.blit(arena, (0, 0))
+
+    draw_player(player, window)
+    draw_player(player2, window)
+
+    # draw all the spells player one has casted
+    for sp in player.spells + player2.spells:
+        sp.update(spell_hit(player, sp, player2))
+        sp.draw(window)
+
+    if player.aim_mode[0]:
+
+        start_pos = (round(player.x + player.width // 2), round(player.y + player.height // 2))
+
+        angle = find_angle(start_pos, pygame.mouse.get_pos())
+        line = (round(start_pos[0] + (math.cos(angle) * 150)), round(start_pos[1] - (math.sin(angle) * 150)))
+
+        pygame.draw.line(window, (155, 23, 112), start_pos, line, 10)
+
+    pygame.display.update()
 
 
 

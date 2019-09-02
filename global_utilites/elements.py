@@ -87,6 +87,38 @@ class MultiLineTextBox:
         pass
 
 
+class TextBox:
+
+    def __init__(self, x, y, w, h, text='', font_size=20, color=(255, 255, 255), hover_color=(255, 255, 255)):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.x, self.y, self.width, self.height = x, y, w, h
+        self.color = color
+        self.hover_color = hover_color
+        self.display_color = color
+        self.text = text
+        self.font_size = font_size
+        self.active = False
+
+    def handle_event(self, event):
+        pass
+
+    def update(self):
+        pass
+
+    def draw(self, screen):
+        txt_surface = pygame.font.SysFont('Arial', self.font_size).render(self.text, True, self.display_color)
+        screen.blit(txt_surface, (self.x, self.y))
+
+    def hover(self, mode):
+        if mode:
+            self.display_color = self.hover_color
+        else:
+            self.display_color = self.color
+
+    def text_config(self):
+        return self.x, self.y, self.width, self.height
+
+
 class InputBox:
 
     def __init__(self, x, y, w, h, text=''):

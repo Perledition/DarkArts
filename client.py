@@ -6,7 +6,7 @@ from network import Network
 from settings.global_constants import window_heigth, window_width
 from global_utilites.utilits import define_rect, find_angle, define_unique_direction
 
-# TODO: Add Sprites differences for each player - handed over by Object / mayby defined by house at the beginning
+# TODO: Add Sprites differences for each player - handed over by Object / maybe defined by house at the beginning
 # TODO: Load Sprites in different file
 
 # set global window settings
@@ -151,4 +151,3 @@ def run_game():
 
 
 run_game()
-
