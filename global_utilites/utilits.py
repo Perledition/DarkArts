@@ -6,6 +6,9 @@ import math
 # third party module imports
 import pygame
 
+# import project module imports
+from objects.statics.sprites import char, arena
+
 
 def define_rect(rect_tuple):
     # (y, y, width, height)
@@ -132,11 +135,11 @@ def define_unique_direction(angle):
         return 7
 
 
-def draw_player(plr, window, character_sprites):
+def draw_player(plr, window):
     # if we move in the left direction display the image by index of walk_count // same for right
     angle = math.degrees(math.atan2(plr.target[1] - plr.y, plr.target[0] - plr.x)) * (-1)
     plr.direction = define_unique_direction(angle)
-    window.blit(character_sprites[plr.direction][plr.walk_count], (plr.x, plr.y))
+    window.blit(char[plr.direction][plr.walk_count], (plr.x, plr.y))
 
     # draw health bar and bar of magic
     pygame.draw.rect(window, (21, 99, 194), (plr.hitbox[0], plr.hitbox[1] - 100, 50, 5))
@@ -186,7 +189,7 @@ def movement_definitions(target, x, y, speed):
 
 # draw the Window which we want to display
 def draw_window(window, player, player2):
-    win.blit(arena, (0, 0))
+    window.blit(arena, (0, 0))
 
     draw_player(player, window)
     draw_player(player2, window)

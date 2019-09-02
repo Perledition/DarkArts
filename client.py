@@ -2,7 +2,7 @@ import pygame
 import os
 import math
 from copy import deepcopy
-from network import Network
+from network.network import Network
 from settings.global_constants import window_heigth, window_width
 from global_utilites.utilits import define_rect, find_angle, define_unique_direction
 

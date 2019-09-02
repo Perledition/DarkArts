@@ -6,12 +6,12 @@ import random
 from copy import deepcopy
 
 # third party imports
-import pygame
 
 # game module imports
-from settings.global_constants import window_heigth, window_width
-from global_utilites.elements import Button, InputBox, TextBox
 from global_utilites.utilits import *
+from connection.network import Network
+from global_utilites.elements import Button, InputBox, TextBox
+from settings.global_constants import window_heigth, window_width, ROOT_PATH
 
 
 class SceneBase:
@@ -26,7 +26,7 @@ class SceneBase:
     def Update(self):
         print("uh-oh, you didn't override this in the child class")
 
-    def Render(self, screen, **kwargs):
+    def Render(self, screen):
         print("uh-oh, you didn't override this in the child class")
 
     def SwitchToScene(self, next_scene):
@@ -41,9 +41,10 @@ class SceneBase:
 class TitleScene(SceneBase):
     def __init__(self):
         SceneBase.__init__(self)
+        self.IMAGE_PATH = os.path.join(ROOT_PATH, 'menus/images/')
         self.font = pygame.font.Font('freesansbold.ttf', 115)
-        self.background = pygame.image.load(os.path.join('menus/images/', 'menu_bg.jpg'))
-        self.login = pygame.image.load(os.path.join('menus/images/', 'login_box.png'))
+        self.background = pygame.image.load(os.path.join(self.IMAGE_PATH, 'menu_bg.jpg'))
+        self.login = pygame.image.load(os.path.join(self.IMAGE_PATH, 'login_box.png'))
         self.join_button = Button((46, 116, 130), (42, 43, 46), 250, 606, 150, 30, 'Enter the Arena')
         self.username = InputBox(130, 470, 150, 30)
         self.password = InputBox(130, 540, 150, 30)
@@ -84,14 +85,16 @@ class TitleScene(SceneBase):
 class HousesScene(SceneBase):
     def __init__(self):
         SceneBase.__init__(self)
-        self.griff_img = [pygame.image.load(os.path.join('menus/images/', x)) for x in ['griff_color.png', 'griff_gray.png']]
-        self.huff_img = [pygame.image.load(os.path.join('menus/images/', x)) for x in ['huff_color.png', 'huff_gray.png']]
-        self.rave_img = [pygame.image.load(os.path.join('menus/images/', x)) for x in ['rave_color.png', 'rave_gray.png']]
-        self.slys_img = [pygame.image.load(os.path.join('menus/images/', x)) for x in ['slys_color.png', 'slys_gray.png']]
+        self.IMAGE_PATH = os.path.join(ROOT_PATH, 'menus/images/')
+        self.SOUND_PATH = os.path.join(ROOT_PATH, 'menus/sounds/')
+        self.griff_img = [pygame.image.load(os.path.join(self.IMAGE_PATH, x)) for x in ['griff_color.png', 'griff_gray.png']]
+        self.huff_img = [pygame.image.load(os.path.join(self.IMAGE_PATH, x)) for x in ['huff_color.png', 'huff_gray.png']]
+        self.rave_img = [pygame.image.load(os.path.join(self.IMAGE_PATH, x)) for x in ['rave_color.png', 'rave_gray.png']]
+        self.slys_img = [pygame.image.load(os.path.join(self.IMAGE_PATH, x)) for x in ['slys_color.png', 'slys_gray.png']]
 
         house_list = ['{}_attr.png'.format(i) for i in ['griff', 'slys', 'huff', 'rave']]
-        self.attributes = [pygame.image.load(os.path.join('menus/images/', x)) for x in house_list]
-        self.gradient = pygame.image.load(os.path.join('menus/images/', 'gradient.png'))
+        self.attributes = [pygame.image.load(os.path.join(self.IMAGE_PATH, x)) for x in house_list]
+        self.gradient = pygame.image.load(os.path.join(self.IMAGE_PATH, 'gradient.png'))
         self.last_hover = 0
 
         w, h = pygame.display.get_surface().get_size()
@@ -139,7 +142,7 @@ class HousesScene(SceneBase):
                 if in_rect(pos, g_rect):
                     self.g_button.hover(True)
                     if self.last_hover != 1:
-                        pygame.mixer.music.load('menus/sounds/button.mp3')
+                        pygame.mixer.music.load(os.path.join(self.SOUND_PATH, 'button.mp3'))
                         pygame.mixer.music.play(0)
                         self.last_hover = 1
                 else:
@@ -148,7 +151,7 @@ class HousesScene(SceneBase):
                 if in_rect(pos, r_rect):
                     self.r_button.hover(True)
                     if self.last_hover != 2:
-                        pygame.mixer.music.load('menus/sounds/button.mp3')
+                        pygame.mixer.music.load(os.path.join(self.SOUND_PATH, 'button.mp3'))
                         pygame.mixer.music.play(0)
                         self.last_hover = 2
                 else:
@@ -157,7 +160,7 @@ class HousesScene(SceneBase):
                 if in_rect(pos, h_rect):
                     self.h_button.hover(True)
                     if self.last_hover != 3:
-                        pygame.mixer.music.load('menus/sounds/button.mp3')
+                        pygame.mixer.music.load(os.path.join(self.SOUND_PATH, 'button.mp3'))
                         pygame.mixer.music.play(0)
                         self.last_hover = 3
                 else:
@@ -166,7 +169,7 @@ class HousesScene(SceneBase):
                 if in_rect(pos, s_rect):
                     self.s_button.hover(True)
                     if self.last_hover != 4:
-                        pygame.mixer.music.load('menus/sounds/button.mp3')
+                        pygame.mixer.music.load(os.path.join(self.SOUND_PATH, 'button.mp3'))
                         pygame.mixer.music.play(0)
                         self.last_hover = 4
                 else:
@@ -298,8 +301,8 @@ class InGameScene(SceneBase):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if in_rect(pos, start_rect):
                     print('Start Search')
-                    pygame.quit()
-                    # self.SwitchToScene(InGameScene())
+                    self.SwitchToScene(Client())
+
                 if in_rect(pos, skill_rect):
                     print('have a look on your spells')
 
@@ -338,50 +341,52 @@ class Client(SceneBase):
 
     def __init__(self):
         SceneBase.__init__(self)
+        self.player1 = None
+        self.player2 = None
 
     def ProcessInput(self, events, pressed_keys):
         run = True
         n = Network()
-        player1 = n.getP()
+        self.player1 = n.getP()
         clock = pygame.time.Clock()
 
         while run:
             clock.tick(60)
-            player2 = n.send(player1)
+            self.player2 = n.send(self.player1)
 
             # update the game window for each event // pygame specific
             for event in events:
 
-                if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1) and (not player1.aim_mode[0]):
-                    player1.target = pygame.mouse.get_pos()
-                    player1.x_vel, player1.y_vel = movement_definitions(player1.target, player1.x, player1.y,
-                                                                        player1.speed)
+                if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1) and (not self.player1.aim_mode[0]):
+                    self.player1.target = pygame.mouse.get_pos()
+                    self.player1.x_vel, self.player1.y_vel = movement_definitions(self.player1.target, self.player1.x, self.player1.y,
+                                                                        self.player1.speed)
 
-                if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1) and player1.aim_mode[0]:
-                    spell = deepcopy(player1.spell_collection[player1.aim_mode[1]])
-                    spell.x = round(player1.x + player1.width // 2)
-                    spell.y = round(player1.y + player1.height // 2)
+                if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1) and self.player1.aim_mode[0]:
+                    spell = deepcopy(self.player1.spell_collection[self.player1.aim_mode[1]])
+                    spell.x = round(self.player1.x + self.player1.width // 2)
+                    spell.y = round(self.player1.y + self.player1.height // 2)
                     spell.target = pygame.mouse.get_pos()
                     spell.x_vel, spell.y_vel = movement_definitions(spell.target, spell.x, spell.y, spell.speed)
                     spell.dx, spell.dy = spell.get_direct_indicators()
-                    player1.cast_spell(spell)
-                    player1.aim_mode = [False, 0]
+                    self.player1.cast_spell(spell)
+                    self.player1.aim_mode = [False, 0]
 
                 if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 3):
-                    player1.aim_mode = [False, 0]
+                    self.player1.aim_mode = [False, 0]
 
                 # if the event is equal to stop, then set run to false an quit the game
                 if event.type == pygame.QUIT:
                     run = False
                     pygame.quit()
 
-            player1.move()
+            self.player1.move()
 
     def Update(self):
         pass
 
-    def Render(self, screen, player1, player2):
-        draw_window(screen, player1, player2)
+    def Render(self, screen):
+        draw_window(screen, self.palyer1, self.player2)
 
 
 def game_menu(fps, starting_scene):
@@ -423,4 +428,4 @@ def game_menu(fps, starting_scene):
         clock.tick(fps)
 
 
-# run_game(60, TitleScene())
+game_menu(60, TitleScene())
