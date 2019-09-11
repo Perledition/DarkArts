@@ -25,4 +25,4 @@ up_left = [pygame.image.load(os.path.join(SKIN_PATH, '8.png'))]
 char = [up, up_right, right, down_right, down, down_left, left, up_left]
 
 # define static images needed in the functions
-arena = pygame.image.load(os.path.join('/Users/maximperl/PycharmProjects/Privat/DarkArts/objects/statics/player/standings/', 'asphalt-883039_1280.jpg'))
+arena = pygame.image.load(os.path.join('/Users/maximperl/PycharmProjects/Privat/DarkArts/menus/images/level', 'level.png'))

@@ -392,6 +392,7 @@ class Client(SceneBase):
         pass
 
     def Render(self, screen):
+
         draw_window(screen, self.player1, self.player2)
 
 
@@ -435,4 +436,4 @@ def game_menu(fps, starting_scene):
         clock.tick(fps)
 
 
-game_menu(60, TitleScene())
+game_menu(60, InGameScene())

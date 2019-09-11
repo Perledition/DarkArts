@@ -8,6 +8,7 @@ import pygame
 
 # import project module imports
 from objects.statics.sprites import char, arena
+from objects.boundries import Wall
 
 
 def define_rect(rect_tuple):
@@ -199,6 +200,11 @@ def draw_window(window, player, player2):
         sp.update(spell_hit(player, sp, player2))
         sp.draw(window)
 
+    # Draw the walls and boundaries
+    for x in range(10, 400):
+        Wall(x, 20).draw(window)
+
+    # check if the aim mode needs to be drawn
     if player.aim_mode[0]:
 
         start_pos = (round(player.x + player.width // 2), round(player.y + player.height // 2))

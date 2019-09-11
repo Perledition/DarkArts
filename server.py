@@ -1,7 +1,7 @@
 # this python file handles the connection to the servers
 import socket
 import os
-from objects.game_objects import Player
+from objects.player import Player
 from _thread import *
 import pickle
 
