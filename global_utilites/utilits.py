@@ -8,7 +8,8 @@ import pygame
 
 # import project module imports
 from objects.statics.sprites import char, arena
-from objects.boundries import Wall
+
+from objects.statics.static_areas import WALLS
 
 
 def define_rect(rect_tuple):
@@ -177,15 +178,19 @@ def spell_hit(player, spell, player2):
 
 
 def movement_definitions(target, x, y, speed):
-    distance = (target[0] - x, target[1] - y)
-    if abs(distance[0]) >= abs(distance[1]):
-        x_vel = speed
-        y_vel = abs(distance[1]) / (abs(distance[0]) / x_vel)
-    else:
-        y_vel = speed
-        x_vel = abs(distance[0]) / (abs(distance[1]) / y_vel)
+    try:
+        distance = (target[0] - x, target[1] - y)
+        if abs(distance[0]) >= abs(distance[1]):
+            x_vel = speed
+            y_vel = abs(distance[1]) / (abs(distance[0]) / x_vel)
+        else:
+            y_vel = speed
+            x_vel = abs(distance[0]) / (abs(distance[1]) / y_vel)
 
-    return x_vel, y_vel
+        return x_vel, y_vel
+
+    except ZeroDivisionError:
+        return 0, 0
 
 
 # draw the Window which we want to display
@@ -201,8 +206,8 @@ def draw_window(window, player, player2):
         sp.draw(window)
 
     # Draw the walls and boundaries
-    for x in range(10, 400):
-        Wall(x, 20).draw(window)
+    for blocker in WALLS:
+        blocker.draw(window)
 
     # check if the aim mode needs to be drawn
     if player.aim_mode[0]:

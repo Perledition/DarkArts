@@ -371,7 +371,7 @@ class Client(SceneBase):
 
             if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1) and self.player1.aim_mode[0]:
                 spell = deepcopy(self.player1.spell_collection[self.player1.aim_mode[1]])
-                spell.x = round(self.player1.x + self.player1.width // 2)
+                spell.x = round(self.player1.x + self.player1.widths// 2)
                 spell.y = round(self.player1.y + self.player1.height // 2)
                 spell.target = pygame.mouse.get_pos()
                 spell.x_vel, spell.y_vel = movement_definitions(spell.target, spell.x, spell.y, spell.speed)

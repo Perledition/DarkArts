@@ -1,5 +1,9 @@
 # find all the Game objects in here
+
+# import project modules
 from .spells import *
+from global_utilites.utilits import in_rect, define_rect
+from objects.statics.static_areas import WALLS
 from settings.global_constants import window_heigth, window_width
 
 # TODO: Create exchangeable spell casts
@@ -177,9 +181,14 @@ class Player:
         # check if the target is already reached and if the distance is larger then a movement
         if (self.target[0] - self.x) != 0 and abs(self.target[0] - self.x) > self.x_vel:
 
-            # update the current x position with predefined movement * direction indicator
-            # x_vel gets predefined in the client for each new target vector
-            self.x += xd * self.x_vel
+            # check if increasing the step size would lead to a violation of a walls territory via boolean map
+            wall_map = [in_rect(((self.x + xd * self.x_vel), self.y), w.rect) for w in WALLS]
+            print(wall_map)
+            if not all(wall_map):
+
+                # update the current x position with predefined movement * direction indicator
+                # x_vel gets predefined in the client for each new target vector
+                self.x += xd * self.x_vel
 
             # update the walk count this you moved in this function
             # self.walk_count += 1
@@ -191,8 +200,13 @@ class Player:
 
         # same as above but just for the y coordinate
         if (self.target[1] - self.y) != 0 and abs(self.target[1] - self.y) > self.y_vel:
-            self.y += yd * self.y_vel
-            # self.walk_count += 1
+
+            # check if increasing the step size would lead to a violation of a walls territory via boolean map
+            wall_map = [in_rect(((self.x + xd * self.x_vel), self.y), define_rect(w.rect)) for w in WALLS]
+            if not all(wall_map):
+                self.y += yd * self.y_vel
+                # self.walk_count += 1
+
         else:
             self.y += (self.target[1] - self.y)
             # self.walk_count += 1
